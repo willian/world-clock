@@ -4,7 +4,7 @@ World Clock is a macOS menu-bar app for comparing time, weather, daylight, and c
 
 ## Demo
 
-<video controls src="https://raw.githubusercontent.com/willian/world-clock/refs/heads/main/docs/media/demo.mov">A short World Clock demo.</video>
+https://github.com/user-attachments/assets/80456f90-992f-41ef-ab57-5eef8463d31a
 
 ## Requirements
 
