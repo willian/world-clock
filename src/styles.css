@@ -1,0 +1,514 @@
+:root {
+  --base: #1e1e2e;
+  --surface: #313244;
+  --surface-hover: #45475a;
+  --surface-raised: #585b70;
+  --overlay: #6c7086;
+  --surface-muted: color-mix(in srgb, var(--surface) 60%, var(--base));
+  --text: #cdd6f4;
+  --subtext: #a6adc8;
+  --sky: #89dceb;
+  --yellow: #f9e2af;
+  --peach: #fab387;
+  --red: #f38ba8;
+  background: var(--base);
+  color: var(--text);
+  font-family: "CaskaydiaCove Nerd Font", monospace;
+  line-height: 1.5rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  -webkit-user-select: none;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  padding: 1rem;
+  position: relative;
+  user-select: none;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+header {
+  padding: 0 0 0.75rem;
+  text-align: center;
+}
+
+.home-time,
+.city-card p,
+.city-time span {
+  color: var(--subtext);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+h1 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.title {
+  margin: 0.5rem auto 0;
+  position: relative;
+  width: max-content;
+}
+
+.globe-toggle {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  height: 1.75rem;
+  justify-content: center;
+  line-height: inherit;
+  padding: 0;
+  vertical-align: -0.25rem;
+  width: 1.75rem;
+}
+
+.globe-toggle canvas {
+  animation: title-globe-glow 3s ease-in-out infinite;
+  display: block;
+  height: 1.75rem;
+  width: 1.75rem;
+}
+
+.globe-toggle.close-globe {
+  color: var(--sky);
+  font-size: 1.75rem;
+  line-height: 1rem;
+}
+
+@keyframes title-globe-glow {
+  50% { filter: drop-shadow(0 0 0.1875rem color-mix(in srgb, var(--sky) 60%, transparent)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .globe-toggle canvas {
+    animation: none;
+  }
+}
+
+.globe-toggle:focus-visible {
+  outline: 1px solid var(--sky);
+  outline-offset: 0.125rem;
+}
+
+.globe-view {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  margin-top: 0.75rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.view-transition {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  transform-origin: center top;
+}
+
+.globe-view canvas {
+  cursor: grab;
+  height: 100%;
+  max-width: 100%;
+  touch-action: none;
+  width: 100%;
+}
+
+.globe-view canvas:active {
+  cursor: grabbing;
+}
+
+.cities {
+  align-content: start;
+  display: grid;
+  flex: 1;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.city-footer {
+  flex: 0 0 auto;
+  margin-top: 0.5rem;
+}
+
+.city-card {
+  background: var(--surface);
+  border: 0;
+  border-radius: 0.25rem;
+  cursor: grab;
+  display: grid;
+  gap: 0.75rem;
+  min-height: 6.5rem;
+  padding: 0.625rem;
+  position: relative;
+  transition: background 150ms;
+}
+
+.city-card:active {
+  cursor: grabbing;
+}
+
+.city-card:nth-child(even) {
+  background: var(--surface-muted);
+}
+
+.city-card:hover,
+.city-card:focus-within {
+  background: var(--surface-raised);
+}
+
+.city-greeting {
+  display: none;
+}
+
+.city-card:hover .city-date,
+.city-card:focus-within .city-date {
+  display: none;
+}
+
+.city-card:hover .city-greeting,
+.city-card:focus-within .city-greeting {
+  display: block;
+}
+
+.city-summary {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.city-card h2 {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.city-title {
+  align-items: baseline;
+  display: flex;
+  gap: 0.5rem;
+  height: 1.75rem;
+}
+
+.weather {
+  background: transparent;
+  border: 0;
+  color: var(--subtext);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.weather:hover,
+.weather:focus-visible {
+  color: var(--text);
+}
+
+.remove-city {
+  background: transparent;
+  border: 0;
+  color: var(--red);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  opacity: 0;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  left: auto;
+  right: 0.5rem;
+  top: 0.25rem;
+}
+
+.city-card:hover .remove-city,
+.remove-city:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.city-time {
+  align-items: end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.city-time .time-toggle {
+  color: var(--sky);
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.time-toggle {
+  align-items: baseline;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: 0.25rem;
+  padding: 0;
+}
+
+.timezone-toggle {
+  background: transparent;
+  border: 0;
+  color: var(--subtext);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0;
+}
+
+.meridiem {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.timeline {
+  background: var(--surface-hover);
+  border-radius: 9999px;
+  height: 0.125rem;
+  position: relative;
+  touch-action: none;
+  cursor: ew-resize;
+}
+
+.daylight {
+  background: var(--overlay);
+  border-radius: inherit;
+  height: 100%;
+  position: absolute;
+}
+
+.current-marker,
+.sun-marker {
+  left: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.current-marker {
+  border: 0.125rem solid var(--base);
+  border-radius: 9999px;
+  height: 1rem;
+  width: 1rem;
+  z-index: 2;
+}
+
+.current-marker.is-day {
+  background: var(--yellow);
+}
+
+.current-marker.is-night {
+  background: var(--text);
+}
+
+.current-marker.is-neutral {
+  background: var(--sky);
+}
+
+.sun-marker {
+  appearance: none;
+  background: var(--peach);
+  border: 0;
+  border-radius: 9999px;
+  cursor: help;
+  height: 0.75rem;
+  opacity: 0.5;
+  padding: 0;
+  width: 0.25rem;
+  z-index: 3;
+}
+
+.sun-marker.is-current {
+  background: transparent;
+}
+
+.city-card:hover .sun-marker,
+.sun-marker:focus-visible {
+  opacity: 1;
+}
+
+.tooltip {
+  background: var(--base);
+  border: 1px solid var(--surface-hover);
+  border-radius: 0.5rem;
+  bottom: calc(100% + 0.5rem);
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  left: 50%;
+  opacity: 0;
+  padding: 0.25rem 0.5rem;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+  transition: opacity 150ms;
+  white-space: nowrap;
+}
+
+.now {
+  background: var(--surface-hover);
+  border: 0;
+  border-radius: 0.25rem;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  left: calc(100% + 0.5rem);
+  padding: 0.25rem 0.5rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.settings-toggle {
+  background: transparent;
+  border: 0;
+  color: var(--subtext);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.25rem;
+  height: 2rem;
+  line-height: 1.5rem;
+  padding: 0.25rem;
+  position: absolute;
+  right: 1rem;
+  top: 0.75rem;
+  width: 2rem;
+  z-index: 5;
+}
+
+.settings-toggle:hover,
+.settings-toggle:focus-visible {
+  color: var(--text);
+}
+
+.settings-menu {
+  background: var(--surface);
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  position: absolute;
+  right: 1rem;
+  top: 3rem;
+  transform-origin: top right;
+  width: max-content;
+  z-index: 4;
+}
+
+.settings-menu label {
+  align-items: center;
+  display: flex;
+  font-size: 0.875rem;
+  gap: 0.5rem;
+  line-height: 1.25rem;
+}
+
+.settings-menu input {
+  accent-color: var(--sky);
+  margin: 0;
+}
+
+.add-city,
+.city-picker {
+  background: var(--surface-muted);
+  border: 0;
+  border-radius: 0.25rem;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.625rem;
+}
+
+.add-city {
+  cursor: pointer;
+  width: 100%;
+}
+
+.city-picker {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr auto;
+}
+
+.city-picker input {
+  -webkit-user-select: text;
+  background: var(--base);
+  border: 1px solid var(--surface-hover);
+  border-radius: 0.25rem;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  min-width: 0;
+  padding: 0.25rem 0.5rem;
+  user-select: text;
+}
+
+.cancel,
+.search-result {
+  background: var(--surface);
+  border: 0;
+  border-radius: 0.25rem;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.results {
+  display: grid;
+  gap: 0.25rem;
+  grid-column: 1 / -1;
+}
+
+.search-result {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.search-result span,
+.results p {
+  color: var(--subtext);
+}
+
+.sun-marker:hover .tooltip,
+.sun-marker:focus-visible .tooltip {
+  opacity: 1;
+}
