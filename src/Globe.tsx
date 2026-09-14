@@ -50,6 +50,7 @@ export function Globe({ cities, home, selected, onSelect }: GlobeProps) {
       const context = element.getContext("2d");
       if (!context) return;
       context.scale(scale, scale);
+      const colors = getComputedStyle(document.documentElement);
 
       const radius = Math.min(bounds.width, bounds.height) / 2 - 12;
       const x = bounds.width / 2;
@@ -57,26 +58,26 @@ export function Globe({ cities, home, selected, onSelect }: GlobeProps) {
       const projection = projectionFor(rotation, radius, x, y);
       const path = geoPath(projection, context);
       context.clearRect(0, 0, bounds.width, bounds.height);
-      context.fillStyle = "#181825";
+      context.fillStyle = colors.getPropertyValue("--base");
       context.beginPath();
       context.arc(x, y, radius, 0, Math.PI * 2);
       context.fill();
-      context.strokeStyle = "#89dceb";
+      context.strokeStyle = colors.getPropertyValue("--sky");
       context.lineWidth = 2;
       context.stroke();
 
-      context.strokeStyle = "#6c7086";
+      context.strokeStyle = colors.getPropertyValue("--overlay");
       context.lineWidth = 1;
       context.globalAlpha = 0.6;
       context.beginPath();
       path(graticule);
       context.stroke();
       context.globalAlpha = 1;
-      context.fillStyle = "#45475a";
+      context.fillStyle = colors.getPropertyValue("--surface-hover");
       context.beginPath();
       path(land);
       context.fill();
-      context.strokeStyle = "#a6adc8";
+      context.strokeStyle = colors.getPropertyValue("--subtext");
       context.lineWidth = 1;
       context.stroke();
       context.font = '10px "CaskaydiaCove Nerd Font", monospace';
@@ -89,18 +90,18 @@ export function Globe({ cities, home, selected, onSelect }: GlobeProps) {
         const [px, py] = point;
         const isHome = cityKey(city) === cityKey(home);
         const isSelected = cityKey(city) === cityKey(selected ?? home);
-        context.fillStyle = isHome || isSelected ? "#89dceb" : "#a6adc8";
+        context.fillStyle = colors.getPropertyValue(isHome || isSelected ? "--sky" : "--subtext");
         context.beginPath();
         context.arc(px, py, isHome ? 4 : 3, 0, Math.PI * 2);
         context.fill();
         if (isSelected) {
-          context.strokeStyle = "#cdd6f4";
+          context.strokeStyle = colors.getPropertyValue("--text");
           context.lineWidth = 2;
           context.beginPath();
           context.arc(px, py, 6, 0, Math.PI * 2);
           context.stroke();
         }
-        context.fillStyle = "#cdd6f4";
+        context.fillStyle = colors.getPropertyValue("--text");
         const label = isHome ? "Home" : city.name;
         const x = px + 9;
         const width = context.measureText(label).width;
@@ -115,8 +116,13 @@ export function Globe({ cities, home, selected, onSelect }: GlobeProps) {
 
     draw();
     const observer = new ResizeObserver(draw);
+    const appearance = window.matchMedia("(prefers-color-scheme: light)");
     observer.observe(element);
-    return () => observer.disconnect();
+    appearance.addEventListener("change", draw);
+    return () => {
+      observer.disconnect();
+      appearance.removeEventListener("change", draw);
+    };
   }, [cities, home, rotation, selected]);
 
   const selectMarker = (event: PointerEvent<HTMLCanvasElement>) => {

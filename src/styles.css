@@ -17,6 +17,36 @@
   line-height: 1.5rem;
 }
 
+@media (prefers-color-scheme: light) {
+  :root:not([data-appearance]) {
+    --base: #eff1f5;
+    --surface: #ccd0da;
+    --surface-hover: #bcc0cc;
+    --surface-raised: #acb0be;
+    --overlay: #9ca0b0;
+    --text: #4c4f69;
+    --subtext: #6c6f85;
+    --sky: #04a5e5;
+    --yellow: #df8e1d;
+    --peach: #fe640b;
+    --red: #d20f39;
+  }
+}
+
+:root[data-appearance="light"] {
+    --base: #eff1f5;
+    --surface: #ccd0da;
+    --surface-hover: #bcc0cc;
+    --surface-raised: #acb0be;
+    --overlay: #9ca0b0;
+    --text: #4c4f69;
+    --subtext: #6c6f85;
+    --sky: #04a5e5;
+    --yellow: #df8e1d;
+    --peach: #fe640b;
+    --red: #d20f39;
+}
+
 * {
   box-sizing: border-box;
 }

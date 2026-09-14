@@ -10,6 +10,8 @@ import { daylight } from "./solar";
 import { cityTime, formatDelta, timelineInstant } from "./time";
 import { formatTemperature, weatherFor, type TemperatureUnit, type Weather } from "./weather";
 
+type Appearance = "dark" | "light";
+
 function SortableCity({
   children,
   city,
@@ -82,6 +84,7 @@ export function App() {
   const [view, setView] = useState<"globe" | "list">("list");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showMenuBar, setShowMenuBar] = useState(true);
+  const [appearance, setAppearance] = useState<Appearance | null>(null);
   const [renderedView, setRenderedView] = useState<"globe" | "list">("list");
   const [highlightedCity, setHighlightedCity] = useState<City | null>(null);
   const reducedMotion = useReducedMotion();
@@ -125,10 +128,16 @@ export function App() {
         void invoke("save_home_city", { city: homeCity });
       }
     }).catch(() => {});
-    void invoke<{ showMenuBar: boolean }>("load_settings").then((settings) => {
+    void invoke<{ appearance?: Appearance; showMenuBar: boolean }>("load_settings").then((settings) => {
+      setAppearance(settings.appearance ?? null);
       setShowMenuBar(settings.showMenuBar);
     }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (appearance) document.documentElement.dataset.appearance = appearance;
+    else delete document.documentElement.dataset.appearance;
+  }, [appearance]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -275,7 +284,21 @@ export function App() {
               onChange={(event) => {
                 const visible = event.target.checked;
                 setShowMenuBar(visible);
-                void invoke("set_menu_bar_visible", { visible }).catch(() => setShowMenuBar(!visible));
+                void invoke("save_settings", { appearance, showMenuBar: visible })
+                  .catch(() => setShowMenuBar(!visible));
+              }}
+              type="checkbox"
+            />
+          </label>
+          <label>
+            <span>Light appearance</span>
+            <input
+              checked={appearance === "light" || (!appearance && window.matchMedia("(prefers-color-scheme: light)").matches)}
+              onChange={(event) => {
+                const next = event.target.checked ? "light" : "dark";
+                setAppearance(next);
+                void invoke("save_settings", { appearance: next, showMenuBar })
+                  .catch(() => setAppearance(appearance));
               }}
               type="checkbox"
             />

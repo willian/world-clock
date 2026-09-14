@@ -39,8 +39,17 @@ struct City {
 }
 
 #[derive(Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+enum Appearance {
+    Dark,
+    Light,
+}
+
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct Settings {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    appearance: Option<Appearance>,
     #[serde(default = "show_menu_bar_by_default")]
     show_menu_bar: bool,
 }
@@ -48,6 +57,7 @@ struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
+            appearance: None,
             show_menu_bar: true,
         }
     }
@@ -147,15 +157,20 @@ fn load_settings(app: AppHandle) -> Result<Settings, String> {
 }
 
 #[tauri::command]
-fn set_menu_bar_visible(app: AppHandle, visible: bool) -> Result<(), String> {
+fn save_settings(
+    app: AppHandle,
+    appearance: Option<Appearance>,
+    show_menu_bar: bool,
+) -> Result<(), String> {
     save_json(
         settings_file(&app)?,
         &Settings {
-            show_menu_bar: visible,
+            appearance,
+            show_menu_bar,
         },
     )?;
     if let Some(tray) = app.tray_by_id("menu-bar") {
-        tray.set_visible(visible)
+        tray.set_visible(show_menu_bar)
             .map_err(|error| error.to_string())?;
     }
     Ok(())
@@ -285,7 +300,10 @@ fn main() {
             let menu = Menu::with_items(app, &[&quit])?;
             let settings = load_settings(app.handle().clone()).unwrap_or_default();
             let tray = TrayIconBuilder::with_id("menu-bar")
-                .icon(app.default_window_icon().unwrap().clone())
+                .icon(tauri::image::Image::from_bytes(include_bytes!(
+                    "../tray-icons/32x32.png"
+                ))?)
+                .icon_as_template(true)
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| {
@@ -324,7 +342,7 @@ fn main() {
             resize_panel,
             save_cities,
             save_home_city,
-            set_menu_bar_visible
+            save_settings
         ])
         .run(tauri::generate_context!())
         .expect("error while running World Clock");
